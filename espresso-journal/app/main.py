@@ -4,7 +4,7 @@ from fastapi import FastAPI, Form, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 
 from app.config import settings
-from app.confluence_client import ConfluenceError, publish_dial_entry
+from app.confluence_client import ConfluenceError, probe_confluence, publish_dial_entry
 from app.models import DialEntry
 from app.parse_unstructured import parse_telegram_or_email_text
 
@@ -14,6 +14,12 @@ app = FastAPI(title="Espresso dial journal", version="0.1.0")
 @app.get("/health")
 async def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/health/confluence")
+async def health_confluence() -> dict:
+    """Returns Confluence Cloud configuration status and probes space (and parent page) if .env is set."""
+    return await probe_confluence()
 
 
 def _check_webhook_secret(secret: str | None) -> None:

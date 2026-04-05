@@ -28,7 +28,7 @@ Log espresso dialing sessions and create a **Confluence** page for each entry. S
    cp .env.example .env
    ```
 
-2. Edit `.env` with [Confluence Cloud](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/) API token, site URL, space key, and optional parent page ID.
+2. Configure **Confluence Cloud** in `.env` (see [Confluence Cloud](#confluence-cloud) below).
 
 3. Run the server:
 
@@ -37,6 +37,27 @@ Log espresso dialing sessions and create a **Confluence** page for each entry. S
    ```
 
 4. Open `http://localhost:8000` for the HTML form.
+
+5. Check Confluence connectivity: `GET http://localhost:8000/health/confluence` or:
+
+   ```bash
+   cd espresso-journal
+   PYTHONPATH=. python scripts/verify_confluence.py
+   ```
+
+### Confluence Cloud
+
+Authentication uses **Basic auth**: your **Atlassian account email** and an **[API token](https://id.atlassian.com/manage-profile/security/api-tokens)** (not your normal password).
+
+| Variable | What to put |
+|----------|----------------|
+| `CONFLUENCE_BASE_URL` | Site root: `https://your-site.atlassian.net` (no `/wiki` required; pasted wiki URLs are normalized) |
+| `CONFLUENCE_EMAIL` | Same email you use for Atlassian / Confluence |
+| `CONFLUENCE_API_TOKEN` | Token from Atlassian account → Security → **Create and manage API tokens** |
+| `CONFLUENCE_SPACE_KEY` | Short key from the space URL (`/wiki/spaces/ABC/...` → `ABC`) |
+| `CONFLUENCE_PARENT_PAGE_ID` | Optional. Numeric page ID so new dial logs are **child pages** under your journal page |
+
+Your account needs permission to **create pages** in that space (typically “Add” on pages or space admin). If the probe succeeds but creating pages returns 403, ask a space admin to grant **create** permission.
 
 ### JSON API
 
